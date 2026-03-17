@@ -378,11 +378,13 @@ async function renderBrandedPage(key, pageNum) {
   const logoH = S.logoH * scale;
   const logoW = (logo.width / logo.height) * logoH;
   const topOff = S.logoTop * scale;
-  let x;
-  if (S.pos === 'left')       x = 24 * scale;
-  else if (S.pos === 'right') x = vp.width - logoW - 24 * scale;
-  else                        x = (vp.width - logoW) / 2;
-  ctx.drawImage(logo, x, topOff, logoW, logoH);
+  if (pageNum === 1) {
+    let x;
+    if (S.pos === 'left')       x = 24 * scale;
+    else if (S.pos === 'right') x = vp.width - logoW - 24 * scale;
+    else                        x = (vp.width - logoW) / 2;
+    ctx.drawImage(logo, x, topOff, logoW, logoH);
+  }
   return canvas.toDataURL('image/png', 0.95);
 }
 
