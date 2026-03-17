@@ -16,41 +16,45 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--navy); color: var(--off-white); min-height: 100vh; display: flex; flex-direction: column; }
+
   /* NAV */
   .topnav { background: #050810; border-bottom: 1px solid var(--border-blue); padding: 11px 24px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
   #navLogoImg { height: 34px; object-fit: contain; }
   .nav-div { width: 1px; height: 26px; background: var(--border-blue); }
   .nav-label { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gray); }
   .nav-badge { margin-left: auto; background: var(--blue-glow); border: 1px solid var(--border-blue); color: var(--blue-light); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
-  /* MAIN LAYOUT */
+
+  /* LAYOUT */
   .layout { display: flex; flex: 1; min-height: 0; }
+
   /* SIDEBAR */
   .sidebar { width: 270px; flex-shrink: 0; background: var(--navy2); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
   .sb-sec { padding: 16px 16px 14px; border-bottom: 1px solid var(--border); }
   .sb-lbl { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); display: block; margin-bottom: 10px; }
-  /* TEMPLATE SLOTS */
-  .slot { border: 1.5px dashed var(--border-blue); border-radius: 8px; padding: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.15s; position: relative; }
-  .slot:hover { border-color: var(--blue-light); background: var(--blue-glow); }
-  .slot.loaded { border-color: rgba(34,197,94,0.4); border-style: solid; background: rgba(34,197,94,0.04); }
-  .slot.active { border-color: var(--blue); border-style: solid; background: var(--blue-glow); }
-  .slot input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .slot-top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-  .slot-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gray); flex-shrink: 0; }
-  .slot.loaded .slot-dot { background: var(--success); }
-  .slot-name-inp { background: transparent; border: none; border-bottom: 1px dashed rgba(255,255,255,0.15); color: var(--off-white); font-size: 12px; font-weight: 600; outline: none; flex: 1; padding: 1px 0; }
-  .slot-name-inp:focus { border-bottom-color: var(--blue-light); }
-  .slot-file { font-size: 10px; color: var(--gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-left: 15px; }
-  .slot.loaded .slot-file { color: var(--success); }
-  .slot-pages { font-size: 10px; color: var(--blue-light); padding-left: 15px; }
+
+  /* TEMPLATE SELECTOR */
+  .tmpl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .tmpl-btn { border: 1.5px solid var(--border-blue); border-radius: 8px; padding: 12px 8px; cursor: pointer; transition: all 0.15s; background: transparent; color: var(--off-white); text-align: center; position: relative; }
+  .tmpl-btn:hover { border-color: var(--blue-light); background: var(--blue-glow); }
+  .tmpl-btn.active { border-color: var(--blue); border-style: solid; background: var(--blue-glow); }
+  .tmpl-btn.loading { opacity: 0.6; cursor: wait; }
+  .tmpl-icon { font-size: 22px; display: block; margin-bottom: 5px; }
+  .tmpl-name { font-size: 11px; font-weight: 700; display: block; }
+  .tmpl-pages { font-size: 10px; color: var(--blue-light); display: block; margin-top: 2px; }
+  .tmpl-status { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--gray); }
+  .tmpl-btn.ready .tmpl-status { background: var(--success); }
+  .tmpl-btn.active .tmpl-status { background: var(--blue-light); }
+
   /* LOGO AREA */
-  .logo-drop { border: 1.5px dashed var(--border-blue); border-radius: 8px; padding: 14px; text-align: center; cursor: pointer; transition: all 0.15s; position: relative; }
+  .logo-drop { border: 1.5px dashed var(--border-blue); border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.15s; position: relative; }
   .logo-drop:hover { border-color: var(--blue-light); background: var(--blue-glow); }
   .logo-drop.loaded { border-color: rgba(34,197,94,0.4); border-style: solid; background: rgba(34,197,94,0.04); }
-  .logo-drop input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-  .logo-preview { max-height: 48px; max-width: 200px; object-fit: contain; display: none; margin: 0 auto 4px; }
-  .logo-drop-label { font-size: 11px; font-weight: 600; color: var(--off-white); }
+  .logo-drop input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .logo-preview { max-height: 52px; max-width: 210px; object-fit: contain; display: none; margin: 0 auto 6px; }
+  .logo-drop-label { font-size: 12px; font-weight: 600; color: var(--off-white); }
   .logo-drop-hint { font-size: 10px; color: var(--gray); margin-top: 3px; }
   .logo-drop.loaded .logo-drop-hint { color: var(--success); }
+
   /* CONTROLS */
   .ctrl-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
   .ctrl-lbl { font-size: 10px; color: var(--gray); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; width: 72px; flex-shrink: 0; }
@@ -59,10 +63,11 @@
   .seg-btn.on { border-color: var(--blue); background: var(--blue-glow); color: var(--blue-light); }
   input[type=range] { flex: 1; accent-color: var(--blue); }
   .range-val { font-size: 11px; color: var(--off-white); font-weight: 600; min-width: 36px; text-align: right; }
+
   /* ALERT */
-  .alert { padding: 9px 12px; border-radius: 6px; font-size: 11px; line-height: 1.5; }
+  .alert { padding: 9px 12px; border-radius: 6px; font-size: 11px; line-height: 1.6; }
   .alert-info { background: var(--blue-glow); border: 1px solid var(--border-blue); color: var(--blue-light); }
-  .alert-warn { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: var(--warn); }
+
   /* BUTTONS */
   .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; white-space: nowrap; }
   .btn-primary { background: var(--blue); color: white; width: 100%; justify-content: center; font-size: 13px; padding: 11px; }
@@ -70,6 +75,7 @@
   .btn-outline { background: transparent; border: 1px solid var(--border-blue); color: var(--blue-light); width: 100%; justify-content: center; margin-top: 6px; }
   .btn-outline:hover:not(:disabled) { background: var(--blue-glow); }
   .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
   /* MAIN / PREVIEW */
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #1a1f2e; }
   .preview-header { background: var(--navy2); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
@@ -81,63 +87,87 @@
   .page-info { font-size: 12px; color: var(--gray-light); min-width: 60px; text-align: center; }
   .canvas-area { flex: 1; overflow-y: auto; display: flex; align-items: flex-start; justify-content: center; padding: 20px; }
   #previewCanvas { background: white; box-shadow: 0 4px 32px rgba(0,0,0,0.4); display: none; max-width: 100%; }
-  .empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--gray); padding: 40px; text-align: center; }
+  .empty-state { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--gray); padding: 60px 40px; text-align: center; }
   .empty-icon { font-size: 52px; opacity: 0.2; }
   .empty-title { font-size: 16px; font-weight: 600; color: var(--gray-light); }
   .empty-sub { font-size: 12px; line-height: 1.6; max-width: 340px; }
+
   /* PROGRESS */
   .progress-bar-wrap { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 8px; display: none; }
   .progress-bar-fill { height: 100%; background: var(--blue); width: 0%; transition: width 0.2s; border-radius: 2px; }
-  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* LOADING OVERLAY */
+  .init-overlay { position: fixed; inset: 0; background: var(--navy); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 100; transition: opacity 0.4s; }
+  .init-overlay.hidden { opacity: 0; pointer-events: none; }
+  .init-spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  .init-text { font-size: 13px; color: var(--gray-light); font-weight: 600; }
+  .init-sub { font-size: 11px; color: var(--gray); }
 </style>
 </head>
 <body>
+
+<!-- LOADING OVERLAY -->
+<div class="init-overlay" id="initOverlay">
+  <div class="init-spinner"></div>
+  <div class="init-text">Loading Report Templates&hellip;</div>
+  <div class="init-sub" id="initSub">Please wait</div>
+</div>
+
 <nav class="topnav">
   <img id="navLogoImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 44'%3E%3Crect width='180' height='44' fill='%23050810'/%3E%3Ctext x='6' y='28' font-family='Arial Black' font-weight='900' font-size='20' fill='white'%3EEXPERT%3C/text%3E%3Ctext x='6' y='41' font-family='Arial' font-weight='700' font-size='11' fill='%231a6fd4' letter-spacing='3'%3ERADIOLOGY%3C/text%3E%3C/svg%3E" alt="Expert Radiology">
   <div class="nav-div"></div>
   <span class="nav-label">Report Brander</span>
   <span class="nav-badge">Logo Injector</span>
 </nav>
+
 <div class="layout">
   <!-- SIDEBAR -->
   <aside class="sidebar">
+
+    <!-- TEMPLATE SELECTOR -->
     <div class="sb-sec">
-      <span class="sb-lbl">Base Templates (PDF)</span>
-      <div id="slot1" class="slot" onclick="activateSlot(1)">
-        <input type="file" accept=".pdf" onchange="loadPDF(1,this)" onclick="e=>e.stopPropagation()">
-        <div class="slot-top"><div class="slot-dot" id="dot1"></div><input class="slot-name-inp" id="sname1" value="Brain MRI" oninput="event.stopPropagation()" onclick="event.stopPropagation()"></div>
-        <div class="slot-file" id="sfile1">Click 📂 to upload PDF</div>
-        <div class="slot-pages" id="spages1"></div>
-      </div>
-      <div id="slot2" class="slot" onclick="activateSlot(2)">
-        <input type="file" accept=".pdf" onchange="loadPDF(2,this)" onclick="e=>e.stopPropagation()">
-        <div class="slot-top"><div class="slot-dot" id="dot2"></div><input class="slot-name-inp" id="sname2" value="Cervical Spine MRI" oninput="event.stopPropagation()" onclick="event.stopPropagation()"></div>
-        <div class="slot-file" id="sfile2">Click 📂 to upload PDF</div>
-        <div class="slot-pages" id="spages2"></div>
-      </div>
-      <div id="slot3" class="slot" onclick="activateSlot(3)">
-        <input type="file" accept=".pdf" onchange="loadPDF(3,this)" onclick="e=>e.stopPropagation()">
-        <div class="slot-top"><div class="slot-dot" id="dot3"></div><input class="slot-name-inp" id="sname3" value="Lumbar Spine MRI" oninput="event.stopPropagation()" onclick="event.stopPropagation()"></div>
-        <div class="slot-file" id="sfile3">Click 📂 to upload PDF</div>
-        <div class="slot-pages" id="spages3"></div>
-      </div>
-      <div id="slot4" class="slot" onclick="activateSlot(4)">
-        <input type="file" accept=".pdf" onchange="loadPDF(4,this)" onclick="e=>e.stopPropagation()">
-        <div class="slot-top"><div class="slot-dot" id="dot4"></div><input class="slot-name-inp" id="sname4" value="Knee MRI" oninput="event.stopPropagation()" onclick="event.stopPropagation()"></div>
-        <div class="slot-file" id="sfile4">Click 📂 to upload PDF</div>
-        <div class="slot-pages" id="spages4"></div>
+      <span class="sb-lbl">Select Report Template</span>
+      <div class="tmpl-grid">
+        <button class="tmpl-btn loading" id="tmpl-brain" onclick="selectTemplate('brain')">
+          <div class="tmpl-status"></div>
+          <span class="tmpl-icon">🧠</span>
+          <span class="tmpl-name">Brain MRI</span>
+          <span class="tmpl-pages" id="pages-brain">Loading&hellip;</span>
+        </button>
+        <button class="tmpl-btn loading" id="tmpl-cspine" onclick="selectTemplate('cspine')">
+          <div class="tmpl-status"></div>
+          <span class="tmpl-icon">🦴</span>
+          <span class="tmpl-name">C-Spine MRI</span>
+          <span class="tmpl-pages" id="pages-cspine">Loading&hellip;</span>
+        </button>
+        <button class="tmpl-btn loading" id="tmpl-lspine" onclick="selectTemplate('lspine')">
+          <div class="tmpl-status"></div>
+          <span class="tmpl-icon">🦴</span>
+          <span class="tmpl-name">L-Spine MRI</span>
+          <span class="tmpl-pages" id="pages-lspine">Loading&hellip;</span>
+        </button>
+        <button class="tmpl-btn loading" id="tmpl-knee" onclick="selectTemplate('knee')">
+          <div class="tmpl-status"></div>
+          <span class="tmpl-icon">🦵</span>
+          <span class="tmpl-name">Knee MRI</span>
+          <span class="tmpl-pages" id="pages-knee">Loading&hellip;</span>
+        </button>
       </div>
     </div>
+
+    <!-- LOGO UPLOAD -->
     <div class="sb-sec">
-      <span class="sb-lbl">Logo</span>
+      <span class="sb-lbl">Upload Your Logo</span>
       <div class="logo-drop" id="logoDrop">
         <input type="file" accept="image/*" onchange="loadLogo(this)">
         <img id="logoPreview" class="logo-preview" alt="">
-        <div class="logo-drop-label" id="logoLabel">⬆ Upload Logo (PNG recommended)</div>
-        <div class="logo-drop-hint" id="logoHint">Transparent background works best</div>
+        <div class="logo-drop-label" id="logoLabel">&#8679; Click to Upload Logo</div>
+        <div class="logo-drop-hint" id="logoHint">PNG with transparent background recommended</div>
       </div>
     </div>
+
+    <!-- PLACEMENT CONTROLS -->
     <div class="sb-sec">
       <span class="sb-lbl">Logo Placement</span>
       <div class="ctrl-row">
@@ -159,117 +189,134 @@
         <span class="range-val" id="topVal">12px</span>
       </div>
     </div>
+
+    <!-- ACTIONS -->
     <div class="sb-sec" style="flex:1;">
       <button class="btn btn-primary" id="generateBtn" onclick="generatePreview()" disabled>
-        ⚡ Generate Preview
+        &#9889; Generate Preview
       </button>
       <button class="btn btn-outline" id="exportBtn" onclick="exportPDF()" disabled>
-        ⬇ Export as PDF
+        &#8595; Export Branded PDF
       </button>
       <div class="progress-bar-wrap" id="progressWrap">
         <div class="progress-bar-fill" id="progressFill"></div>
       </div>
       <div id="statusMsg" style="font-size:11px;color:var(--gray);margin-top:8px;text-align:center;min-height:16px;"></div>
     </div>
+
+    <!-- HOW IT WORKS -->
     <div class="sb-sec">
       <div class="alert alert-info">
         <strong>How it works:</strong><br>
-        1. Upload up to 4 PDF templates<br>
-        2. Upload the Expert Radiology logo<br>
-        3. Position &amp; size the logo<br>
-        4. Click Generate → Export PDF
+        1. Select a report type above<br>
+        2. Upload your logo (PNG recommended)<br>
+        3. Adjust size &amp; position<br>
+        4. Generate Preview &rarr; Export PDF
       </div>
     </div>
+
   </aside>
+
   <!-- MAIN PREVIEW -->
   <main class="main">
     <div class="preview-header">
       <span class="preview-title" id="previewTitle">No template selected</span>
       <div class="page-nav">
-        <button id="prevPage" onclick="changePage(-1)" disabled>‹</button>
-        <span class="page-info" id="pageInfo">— / —</span>
-        <button id="nextPage" onclick="changePage(1)" disabled>›</button>
+        <button id="prevPage" onclick="changePage(-1)" disabled>&#8249;</button>
+        <span class="page-info" id="pageInfo">&#8212; / &#8212;</span>
+        <button id="nextPage" onclick="changePage(1)" disabled>&#8250;</button>
       </div>
     </div>
     <div class="canvas-area" id="canvasArea">
       <div class="empty-state" id="emptyState">
-        <div class="empty-icon">📄</div>
-        <div class="empty-title">Upload a PDF template to get started</div>
-        <div class="empty-sub">Upload your report PDFs on the left, then upload the Expert Radiology logo. Click <strong>Generate Preview</strong> to see the branded output before exporting.</div>
+        <div class="empty-icon">&#128196;</div>
+        <div class="empty-title">Select a report template to get started</div>
+        <div class="empty-sub">Choose Brain, C-Spine, L-Spine, or Knee MRI from the left panel, then upload your logo and click <strong>Generate Preview</strong>.</div>
       </div>
       <canvas id="previewCanvas"></canvas>
     </div>
   </main>
 </div>
+
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const { jsPDF } = window.jspdf;
-const S = {
-  pdfs: {1:null,2:null,3:null,4:null},       // ArrayBuffer
-  pdfDocs: {1:null,2:null,3:null,4:null},     // pdf.js doc
-  pageCount: {1:0,2:0,3:0,4:0},
-  filenames: {1:null,2:null,3:null,4:null},
-  logoImg: null,       // HTMLImageElement
-  logoDataUrl: null,
-  activeSlot: null,
-  currentPage: 1,
-  pos: 'left',
-  logoH: 80,
-  logoTop: 12,
-  renderedPages: [],   // array of canvas data URLs (branded)
-  rendering: false
+
+const TEMPLATES = {
+  brain:  { name: 'Brain MRI',   file: 'pdfs/Brain.pdf'  },
+  cspine: { name: 'C-Spine MRI', file: 'pdfs/CSpine.pdf' },
+  lspine: { name: 'L-Spine MRI', file: 'pdfs/LSpine.pdf' },
+  knee:   { name: 'Knee MRI',    file: 'pdfs/Knee.pdf'   },
 };
-// ---- TEMPLATE LOADING ----
-async function loadPDF(idx, inp) {
-  const f = inp.files[0]; if(!f) return;
-  const ab = await f.arrayBuffer();
-  S.pdfs[idx] = ab;
-  S.filenames[idx] = f.name;
-  const doc = await pdfjsLib.getDocument({data: ab.slice(0)}).promise;
-  S.pdfDocs[idx] = doc;
-  S.pageCount[idx] = doc.numPages;
-  document.getElementById('dot'+idx).style.background = 'var(--success)';
-  document.getElementById('sfile'+idx).textContent = '✓ ' + f.name;
-  document.getElementById('spages'+idx).textContent = doc.numPages + ' page' + (doc.numPages>1?'s':'');
-  document.getElementById('slot'+idx).classList.add('loaded');
-  activateSlot(idx);
-  checkReady();
+
+const S = {
+  buffers: {}, pdfDocs: {}, pageCount: {},
+  activeKey: null, currentPage: 1,
+  logoImg: null, logoDataUrl: null,
+  pos: 'left', logoH: 80, logoTop: 12,
+  renderedPages: [],
+};
+
+async function init() {
+  const keys = Object.keys(TEMPLATES);
+  for (const key of keys) {
+    const t = TEMPLATES[key];
+    document.getElementById('initSub').textContent = 'Loading ' + t.name + '\u2026';
+    try {
+      const resp = await fetch(t.file);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const ab = await resp.arrayBuffer();
+      S.buffers[key] = ab;
+      const doc = await pdfjsLib.getDocument({ data: ab.slice(0) }).promise;
+      S.pdfDocs[key] = doc;
+      S.pageCount[key] = doc.numPages;
+      const btn = document.getElementById('tmpl-' + key);
+      btn.classList.remove('loading');
+      btn.classList.add('ready');
+      document.getElementById('pages-' + key).textContent = doc.numPages + ' page' + (doc.numPages > 1 ? 's' : '');
+    } catch(e) {
+      document.getElementById('pages-' + key).textContent = 'Error loading';
+      console.error('Failed to load', key, e);
+    }
+  }
+  document.getElementById('initOverlay').classList.add('hidden');
+  setTimeout(() => document.getElementById('initOverlay').style.display = 'none', 500);
 }
-function activateSlot(idx) {
-  if(!S.pdfDocs[idx]) return;
-  [1,2,3,4].forEach(i => document.getElementById('slot'+i).classList.remove('active'));
-  document.getElementById('slot'+idx).classList.add('active');
-  S.activeSlot = idx;
+
+function selectTemplate(key) {
+  if (!S.pdfDocs[key]) return;
+  Object.keys(TEMPLATES).forEach(k => document.getElementById('tmpl-' + k).classList.remove('active'));
+  document.getElementById('tmpl-' + key).classList.add('active');
+  S.activeKey = key;
   S.currentPage = 1;
   S.renderedPages = [];
-  document.getElementById('previewTitle').textContent = document.getElementById('sname'+idx).value || 'Report Type '+idx;
+  document.getElementById('previewTitle').textContent = TEMPLATES[key].name;
   document.getElementById('exportBtn').disabled = true;
   document.getElementById('emptyState').style.display = 'none';
   document.getElementById('previewCanvas').style.display = 'block';
-  updatePageNav();
   checkReady();
-  // Show first page raw (without logo) so they see the doc
-  renderRawPage(idx, 1);
+  renderRawPage(key, 1);
 }
-async function renderRawPage(idx, pageNum) {
-  const doc = S.pdfDocs[idx]; if(!doc) return;
+
+async function renderRawPage(key, pageNum) {
+  const doc = S.pdfDocs[key]; if (!doc) return;
   const page = await doc.getPage(pageNum);
   const scale = getScale(page);
-  const vp = page.getViewport({scale});
+  const vp = page.getViewport({ scale });
   const canvas = document.getElementById('previewCanvas');
   canvas.width = vp.width; canvas.height = vp.height;
-  const ctx = canvas.getContext('2d');
-  await page.render({canvasContext:ctx, viewport:vp}).promise;
+  await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
   updatePageNav();
 }
+
 function getScale(page) {
-  const vp = page.getViewport({scale:1});
-  const maxW = Math.min(document.getElementById('canvasArea').clientWidth - 40, 800);
+  const vp = page.getViewport({ scale: 1 });
+  const maxW = Math.min(document.getElementById('canvasArea').clientWidth - 40, 820);
   return maxW / vp.width;
 }
-// ---- LOGO ----
+
 function loadLogo(inp) {
-  const f = inp.files[0]; if(!f) return;
+  const f = inp.files[0]; if (!f) return;
   const reader = new FileReader();
   reader.onload = e => {
     S.logoDataUrl = e.target.result;
@@ -277,9 +324,8 @@ function loadLogo(inp) {
     img.onload = () => {
       S.logoImg = img;
       const prev = document.getElementById('logoPreview');
-      prev.src = e.target.result;
-      prev.style.display = 'block';
-      document.getElementById('logoLabel').textContent = '✓ ' + f.name;
+      prev.src = e.target.result; prev.style.display = 'block';
+      document.getElementById('logoLabel').textContent = '\u2713 ' + f.name;
       document.getElementById('logoDrop').classList.add('loaded');
       document.getElementById('navLogoImg').src = e.target.result;
       checkReady();
@@ -288,142 +334,121 @@ function loadLogo(inp) {
   };
   reader.readAsDataURL(f);
 }
-// ---- CONTROLS ----
+
 function setPos(p) {
   S.pos = p;
   ['L','C','R'].forEach(x => document.getElementById('pos'+x).classList.remove('on'));
-  document.getElementById('pos'+{left:'L',center:'C',right:'R'}[p]).classList.add('on');
+  document.getElementById('pos' + {left:'L',center:'C',right:'R'}[p]).classList.add('on');
 }
-function onSizeChange(v) { S.logoH = parseInt(v); document.getElementById('sizeVal').textContent = v+'px'; }
-function onTopChange(v) { S.logoTop = parseInt(v); document.getElementById('topVal').textContent = v+'px'; }
+function onSizeChange(v) { S.logoH = parseInt(v); document.getElementById('sizeVal').textContent = v + 'px'; }
+function onTopChange(v)  { S.logoTop = parseInt(v); document.getElementById('topVal').textContent = v + 'px'; }
+
 function checkReady() {
-  const ready = S.activeSlot && S.pdfDocs[S.activeSlot] && S.logoImg;
-  document.getElementById('generateBtn').disabled = !ready;
+  document.getElementById('generateBtn').disabled = !(S.activeKey && S.pdfDocs[S.activeKey] && S.logoImg);
 }
-// ---- GENERATE PREVIEW ----
+
 async function generatePreview() {
-  const idx = S.activeSlot;
-  if(!idx || !S.pdfDocs[idx] || !S.logoImg) return;
+  const key = S.activeKey;
+  if (!key || !S.pdfDocs[key] || !S.logoImg) return;
   S.renderedPages = [];
-  S.rendering = true;
-  const totalPages = S.pageCount[idx];
-  setStatus('Rendering page 1 of ' + totalPages + '...');
+  const total = S.pageCount[key];
   showProgress(0);
-  for(let p = 1; p <= totalPages; p++) {
-    setStatus('Rendering page ' + p + ' of ' + totalPages + '...');
-    showProgress(p / totalPages);
-    const dataUrl = await renderBrandedPage(idx, p);
-    S.renderedPages.push(dataUrl);
+  for (let p = 1; p <= total; p++) {
+    setStatus('Rendering page ' + p + ' of ' + total + '\u2026');
+    showProgress(p / total);
+    S.renderedPages.push(await renderBrandedPage(key, p));
   }
-  S.rendering = false;
   S.currentPage = 1;
   showPage(1);
   document.getElementById('exportBtn').disabled = false;
-  setStatus('✓ All ' + totalPages + ' pages ready');
+  setStatus('\u2713 ' + total + ' page' + (total > 1 ? 's' : '') + ' ready \u2014 click Export to download');
   hideProgress();
 }
-async function renderBrandedPage(idx, pageNum) {
-  const doc = S.pdfDocs[idx];
-  // Re-open from buffer to avoid "already destroyed" issues
-  const freshDoc = await pdfjsLib.getDocument({data: S.pdfs[idx].slice(0)}).promise;
+
+async function renderBrandedPage(key, pageNum) {
+  const freshDoc = await pdfjsLib.getDocument({ data: S.buffers[key].slice(0) }).promise;
   const page = await freshDoc.getPage(pageNum);
-  const scale = 2.0; // high res for export
-  const vp = page.getViewport({scale});
+  const scale = 2.0;
+  const vp = page.getViewport({ scale });
   const canvas = document.createElement('canvas');
   canvas.width = vp.width; canvas.height = vp.height;
   const ctx = canvas.getContext('2d');
-  // Render PDF page
-  await page.render({canvasContext:ctx, viewport:vp}).promise;
-  // Stamp logo
+  await page.render({ canvasContext: ctx, viewport: vp }).promise;
   const logo = S.logoImg;
   const logoH = S.logoH * scale;
   const logoW = (logo.width / logo.height) * logoH;
   const topOff = S.logoTop * scale;
   let x;
-  const pageW = vp.width;
-  if(S.pos === 'left') x = 24 * scale;
-  else if(S.pos === 'right') x = pageW - logoW - 24 * scale;
-  else x = (pageW - logoW) / 2;
-  // White backing strip if needed (only first page header region)
-  // Actually just draw directly — transparent PNG logos work perfectly
+  if (S.pos === 'left')       x = 24 * scale;
+  else if (S.pos === 'right') x = vp.width - logoW - 24 * scale;
+  else                        x = (vp.width - logoW) / 2;
   ctx.drawImage(logo, x, topOff, logoW, logoH);
   return canvas.toDataURL('image/png', 0.95);
 }
+
 function showPage(n) {
-  if(!S.renderedPages.length) return;
+  if (!S.renderedPages.length) return;
   S.currentPage = n;
   const canvas = document.getElementById('previewCanvas');
   const img = new Image();
   img.onload = () => {
-    // Scale to fit preview area
-    const maxW = Math.min(document.getElementById('canvasArea').clientWidth - 40, 800);
+    const maxW = Math.min(document.getElementById('canvasArea').clientWidth - 40, 820);
     const ratio = maxW / img.width;
-    canvas.width = img.width * ratio;
-    canvas.height = img.height * ratio;
+    canvas.width = img.width * ratio; canvas.height = img.height * ratio;
     canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
   };
-  img.src = S.renderedPages[n-1];
+  img.src = S.renderedPages[n - 1];
   document.getElementById('emptyState').style.display = 'none';
   canvas.style.display = 'block';
   updatePageNav();
 }
+
 function changePage(d) {
+  const total = S.renderedPages.length || (S.activeKey ? S.pageCount[S.activeKey] : 0);
   const n = S.currentPage + d;
-  if(n < 1 || n > S.renderedPages.length) return;
-  if(S.renderedPages.length) showPage(n);
-  else if(S.activeSlot) renderRawPage(S.activeSlot, n);
+  if (n < 1 || n > total) return;
+  if (S.renderedPages.length) showPage(n);
+  else if (S.activeKey) { S.currentPage = n; renderRawPage(S.activeKey, n); }
   S.currentPage = n;
   updatePageNav();
 }
+
 function updatePageNav() {
-  const total = S.renderedPages.length || (S.activeSlot ? S.pageCount[S.activeSlot] : 0);
-  const cur = S.currentPage;
-  document.getElementById('pageInfo').textContent = total ? (cur + ' / ' + total) : '— / —';
-  document.getElementById('prevPage').disabled = cur <= 1;
-  document.getElementById('nextPage').disabled = cur >= total;
+  const total = S.renderedPages.length || (S.activeKey ? S.pageCount[S.activeKey] : 0);
+  document.getElementById('pageInfo').textContent = total ? (S.currentPage + ' / ' + total) : '\u2014 / \u2014';
+  document.getElementById('prevPage').disabled = S.currentPage <= 1;
+  document.getElementById('nextPage').disabled = S.currentPage >= total;
 }
-// ---- EXPORT PDF ----
+
 async function exportPDF() {
-  if(!S.renderedPages.length) return;
-  setStatus('Building PDF...');
-  showProgress(0);
+  if (!S.renderedPages.length) return;
+  setStatus('Building PDF\u2026'); showProgress(0);
   try {
-    // Get first page dimensions from rendered image
     const firstImg = await loadImage(S.renderedPages[0]);
-    // Use original PDF page dimensions (letter: 8.5x11 = 612x792 pts at 72dpi)
-    // We rendered at scale 2.0 so pxPerPt ≈ 2
-    // Use jsPDF with image dimensions
-    const pxW = firstImg.width, pxH = firstImg.height;
-    // Convert to mm (96dpi base but we used scale 2 at PDF 72dpi)
-    const ptW = pxW / 2, ptH = pxH / 2; // points
-    const mmW = ptW * 0.352778, mmH = ptH * 0.352778;
+    const mmW = (firstImg.width / 2) * 0.352778;
+    const mmH = (firstImg.height / 2) * 0.352778;
     const pdf = new jsPDF({ unit: 'mm', format: [mmW, mmH], orientation: mmH > mmW ? 'p' : 'l' });
-    for(let i = 0; i < S.renderedPages.length; i++) {
-      showProgress((i+1)/S.renderedPages.length);
-      if(i > 0) pdf.addPage([mmW, mmH], mmH > mmW ? 'p' : 'l');
+    for (let i = 0; i < S.renderedPages.length; i++) {
+      showProgress((i + 1) / S.renderedPages.length);
+      if (i > 0) pdf.addPage([mmW, mmH], mmH > mmW ? 'p' : 'l');
       pdf.addImage(S.renderedPages[i], 'PNG', 0, 0, mmW, mmH, undefined, 'FAST');
     }
-    const slot = S.activeSlot;
-    const fname = (document.getElementById('sname'+slot).value || 'Report') + '_Branded.pdf';
+    const fname = TEMPLATES[S.activeKey].name.replace(/\s+/g, '_') + '_Branded.pdf';
     pdf.save(fname);
-    setStatus('✓ Exported: ' + fname);
+    setStatus('\u2713 Saved: ' + fname);
     hideProgress();
   } catch(e) {
     setStatus('Export error: ' + e.message);
     hideProgress();
   }
 }
-function loadImage(src) {
-  return new Promise(res => { const i = new Image(); i.onload = ()=>res(i); i.src = src; });
-}
+
+function loadImage(src) { return new Promise(res => { const i = new Image(); i.onload = () => res(i); i.src = src; }); }
 function setStatus(msg) { document.getElementById('statusMsg').textContent = msg; }
-function showProgress(pct) {
-  document.getElementById('progressWrap').style.display = 'block';
-  document.getElementById('progressFill').style.width = (pct*100) + '%';
-}
-function hideProgress() {
-  setTimeout(() => document.getElementById('progressWrap').style.display = 'none', 800);
-}
+function showProgress(pct) { document.getElementById('progressWrap').style.display = 'block'; document.getElementById('progressFill').style.width = (pct * 100) + '%'; }
+function hideProgress() { setTimeout(() => document.getElementById('progressWrap').style.display = 'none', 800); }
+
+init();
 </script>
 </body>
 </html>
