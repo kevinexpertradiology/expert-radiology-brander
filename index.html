@@ -19,7 +19,7 @@
 
   /* NAV */
   .topnav { background: #050810; border-bottom: 1px solid var(--border-blue); padding: 11px 24px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-  #navLogoImg { height: 34px; object-fit: contain; }
+  #navLogoImg { height: 38px; object-fit: contain; }
   .nav-div { width: 1px; height: 26px; background: var(--border-blue); }
   .nav-label { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gray); }
   .nav-badge { margin-left: auto; background: var(--blue-glow); border: 1px solid var(--border-blue); color: var(--blue-light); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
@@ -115,7 +115,7 @@
 </div>
 
 <nav class="topnav">
-  <img id="navLogoImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 44'%3E%3Crect width='180' height='44' fill='%23050810'/%3E%3Ctext x='6' y='28' font-family='Arial Black' font-weight='900' font-size='20' fill='white'%3EEXPERT%3C/text%3E%3Ctext x='6' y='41' font-family='Arial' font-weight='700' font-size='11' fill='%231a6fd4' letter-spacing='3'%3ERADIOLOGY%3C/text%3E%3C/svg%3E" alt="Expert Radiology">
+  <img id="navLogoImg" src="er-logo.png" alt="Expert Radiology">
   <div class="nav-div"></div>
   <span class="nav-label">Report Brander</span>
   <span class="nav-badge">Logo Injector</span>
@@ -327,7 +327,6 @@ function loadLogo(inp) {
       prev.src = e.target.result; prev.style.display = 'block';
       document.getElementById('logoLabel').textContent = '\u2713 ' + f.name;
       document.getElementById('logoDrop').classList.add('loaded');
-      document.getElementById('navLogoImg').src = e.target.result;
       checkReady();
     };
     img.src = e.target.result;
