@@ -4,276 +4,595 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Expert Radiology — Report Brander</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-  :root {
-    --navy: #0a0f1e; --navy2: #0d1529; --navy3: #111e38;
-    --blue: #1a6fd4; --blue-light: #2e8cff; --blue-glow: rgba(26,111,212,0.15);
-    --white: #fff; --off-white: #e8edf5; --gray: #7a8ba8; --gray-light: #b0bece;
-    --border: rgba(255,255,255,0.07); --border-blue: rgba(26,111,212,0.35);
-    --success: #22c55e; --warn: #f59e0b;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--navy); color: var(--off-white); min-height: 100vh; display: flex; flex-direction: column; }
+/* ── Design Tokens ─────────────────────────────────────────────────────── */
+:root {
+  --er-primary:        #116ACC;
+  --er-primary-hover:  #0E58AC;
+  --er-primary-pressed:#0A467F;
+  --er-primary-soft:   #E6F0FB;
+  --er-navy:           #182233;
+  --er-navy-2:         #223057;
+  --er-mist:           #F5F7FF;
+  --er-haze:           #E9EEFE;
+  --er-accent:         #FF1B2E;
+  --er-accent-soft:    #FFE8EA;
+  --er-black:          #000000;
+  --er-gray-1:         #111827;
+  --er-gray-2:         #374151;
+  --er-gray-3:         #4B5563;
+  --er-gray-4:         #6B7280;
+  --er-gray-5:         #9CA3AF;
+  --er-gray-6:         #D1D5DB;
+  --er-gray-7:         #E5E7EB;
+  --er-gray-8:         #F3F4F6;
+  --er-white:          #FFFFFF;
+  --er-success:        #16A66A;
+  --er-success-soft:   #E1F5EC;
+  --er-warning:        #EAB756;
+  --er-warning-soft:   #FDF3E0;
+  --er-error:          #E5384A;
+  --fg-1:              var(--er-gray-1);
+  --fg-2:              var(--er-gray-3);
+  --fg-3:              var(--er-gray-4);
+  --fg-muted:          var(--er-gray-5);
+  --fg-brand:          var(--er-primary);
+  --bg-1:              var(--er-white);
+  --bg-2:              var(--er-gray-8);
+  --border-1:          var(--er-gray-7);
+  --border-2:          var(--er-gray-6);
+  --border-focus:      var(--er-primary);
+  --font-sans:         'Montserrat', ui-sans-serif, system-ui, sans-serif;
+  --shadow-xs:         0 1px 2px rgba(24,34,51,0.04);
+  --shadow-sm:         0 1px 3px rgba(24,34,51,0.06), 0 1px 2px rgba(24,34,51,0.04);
+  --shadow-md:         0 6px 16px -4px rgba(24,34,51,0.08), 0 2px 4px rgba(24,34,51,0.04);
+  --shadow-lg:         0 16px 40px -8px rgba(24,34,51,0.14), 0 4px 12px rgba(24,34,51,0.06);
+  --ring-focus:        0 0 0 3px rgba(17,106,204,0.28);
+  --radius-sm:         6px;
+  --radius-md:         10px;
+  --radius-lg:         14px;
+  --radius-xl:         20px;
+  --radius-pill:       999px;
+  --ease-out:          cubic-bezier(0.16,1,0.3,1);
+  --dur-fast:          120ms;
+  --dur-base:          200ms;
+}
 
-  /* NAV */
-  .topnav { background: #050810; border-bottom: 1px solid var(--border-blue); padding: 11px 24px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-  #navLogoImg { height: 38px; object-fit: contain; }
-  .nav-div { width: 1px; height: 26px; background: var(--border-blue); }
-  .nav-label { font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gray); }
-  .nav-badge { margin-left: auto; background: var(--blue-glow); border: 1px solid var(--border-blue); color: var(--blue-light); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  font-family: var(--font-sans);
+  color: var(--fg-1);
+  background: var(--bg-2);
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+body { display: flex; flex-direction: column; min-height: 100vh; }
 
-  /* LAYOUT */
-  .layout { display: flex; flex: 1; min-height: 0; }
+/* ── Password Gate ──────────────────────────────────────────────────────── */
+.pw-gate {
+  position: fixed; inset: 0;
+  background: var(--er-navy);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 300;
+}
+.pw-gate.hidden { display: none; }
+.pw-card {
+  background: var(--er-navy-2);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-xl);
+  padding: 44px 40px 40px;
+  width: 360px;
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+  box-shadow: var(--shadow-lg);
+}
+.pw-logo { height: 40px; object-fit: contain; }
+.pw-divider { width: 40px; height: 2px; background: var(--er-accent); border-radius: 2px; margin: -6px 0; }
+.pw-heading { font: 700 17px/1.2 var(--font-sans); color: #fff; text-align: center; }
+.pw-sub { font: 400 12px/1.5 var(--font-sans); color: rgba(255,255,255,0.45); text-align: center; margin-top: -10px; }
+.pw-field { width: 100%; position: relative; }
+.pw-field i { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.3); font-size: 18px; pointer-events: none; }
+.pw-input {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius-md);
+  padding: 12px 42px 12px 40px;
+  font: 500 14px/1 var(--font-sans);
+  color: #fff;
+  outline: none;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+  letter-spacing: 1px;
+}
+.pw-input::placeholder { color: rgba(255,255,255,0.25); letter-spacing: 0; }
+.pw-input:focus { border-color: var(--er-primary); box-shadow: 0 0 0 3px rgba(17,106,204,0.3); }
+.pw-input.shake { animation: shake 0.35s ease; border-color: var(--er-accent); }
+.pw-eye {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.3); font-size: 18px;
+  transition: color var(--dur-fast);
+}
+.pw-eye:hover { color: rgba(255,255,255,0.6); }
+.pw-err { font: 500 11px/1 var(--font-sans); color: var(--er-accent); min-height: 14px; text-align: center; margin-top: -10px; }
+.pw-submit {
+  width: 100%; height: 44px;
+  background: var(--er-primary);
+  color: #fff; border: none; border-radius: var(--radius-md);
+  font: 700 13px/1 var(--font-sans);
+  cursor: pointer; transition: background var(--dur-fast);
+  letter-spacing: 0.02em;
+}
+.pw-submit:hover { background: var(--er-primary-hover); }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
 
-  /* SIDEBAR */
-  .sidebar { width: 270px; flex-shrink: 0; background: var(--navy2); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
-  .sb-sec { padding: 16px 16px 14px; border-bottom: 1px solid var(--border); }
-  .sb-lbl { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gray); display: block; margin-bottom: 10px; }
+/* ── Loading Overlay ────────────────────────────────────────────────────── */
+.init-overlay {
+  position: fixed; inset: 0;
+  background: var(--er-navy);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  z-index: 200;
+  transition: opacity 0.4s var(--ease-out);
+}
+.init-overlay.hidden { opacity: 0; pointer-events: none; }
+.init-spinner {
+  width: 40px; height: 40px;
+  border: 3px solid rgba(255,255,255,0.1);
+  border-top-color: var(--er-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.init-label { font: 600 13px/1 var(--font-sans); color: rgba(255,255,255,0.7); }
+.init-sub   { font: 400 11px/1 var(--font-sans); color: rgba(255,255,255,0.35); }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-  /* TEMPLATE SELECTOR */
-  .tmpl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .tmpl-btn { border: 1.5px solid var(--border-blue); border-radius: 8px; padding: 12px 8px; cursor: pointer; transition: all 0.15s; background: transparent; color: var(--off-white); text-align: center; position: relative; }
-  .tmpl-btn:hover { border-color: var(--blue-light); background: var(--blue-glow); }
-  .tmpl-btn.active { border-color: var(--blue); border-style: solid; background: var(--blue-glow); }
-  .tmpl-btn.loading { opacity: 0.6; cursor: wait; }
-  .tmpl-icon { font-size: 22px; display: block; margin-bottom: 5px; }
-  .tmpl-name { font-size: 11px; font-weight: 700; display: block; }
-  .tmpl-pages { font-size: 10px; color: var(--blue-light); display: block; margin-top: 2px; }
-  .tmpl-status { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: var(--gray); }
-  .tmpl-btn.ready .tmpl-status { background: var(--success); }
-  .tmpl-btn.active .tmpl-status { background: var(--blue-light); }
+/* ── Top Nav ────────────────────────────────────────────────────────────── */
+.topnav {
+  background: var(--er-navy);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  padding: 0 24px;
+  height: 60px;
+  display: flex; align-items: center; gap: 14px;
+  flex-shrink: 0;
+  position: sticky; top: 0; z-index: 10;
+}
+.topnav-logo { height: 30px; object-fit: contain; }
+.topnav-divider { width: 1px; height: 22px; background: rgba(255,255,255,0.12); }
+.topnav-label {
+  font: 600 11px/1 var(--font-sans);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+}
+.topnav-badge {
+  margin-left: auto;
+  background: rgba(17,106,204,0.18);
+  border: 1px solid rgba(17,106,204,0.4);
+  color: #6eaaff;
+  font: 700 10px/1 var(--font-sans);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+}
 
-  /* LOGO AREA */
-  .logo-drop { border: 1.5px dashed var(--border-blue); border-radius: 8px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.15s; position: relative; }
-  .logo-drop:hover { border-color: var(--blue-light); background: var(--blue-glow); }
-  .logo-drop.loaded { border-color: rgba(34,197,94,0.4); border-style: solid; background: rgba(34,197,94,0.04); }
-  .logo-drop input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .logo-preview { max-height: 52px; max-width: 210px; object-fit: contain; display: none; margin: 0 auto 6px; }
-  .logo-drop-label { font-size: 12px; font-weight: 600; color: var(--off-white); }
-  .logo-drop-hint { font-size: 10px; color: var(--gray); margin-top: 3px; }
-  .logo-drop.loaded .logo-drop-hint { color: var(--success); }
+/* ── App Layout ─────────────────────────────────────────────────────────── */
+.layout { display: flex; flex: 1; min-height: 0; overflow: hidden; height: calc(100vh - 60px); }
 
-  /* CONTROLS */
-  .ctrl-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-  .ctrl-lbl { font-size: 10px; color: var(--gray); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; width: 72px; flex-shrink: 0; }
-  .seg-btns { display: flex; gap: 4px; }
-  .seg-btn { padding: 5px 10px; font-size: 11px; border-radius: 5px; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--gray-light); transition: all 0.15s; }
-  .seg-btn.on { border-color: var(--blue); background: var(--blue-glow); color: var(--blue-light); }
-  input[type=range] { flex: 1; accent-color: var(--blue); }
-  .range-val { font-size: 11px; color: var(--off-white); font-weight: 600; min-width: 36px; text-align: right; }
+/* ── Sidebar ────────────────────────────────────────────────────────────── */
+.sidebar {
+  width: 280px; flex-shrink: 0;
+  background: var(--er-navy);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.sb-sec { padding: 20px 18px 18px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.sb-sec:last-child { border-bottom: none; }
+.sb-lbl {
+  display: block; margin-bottom: 12px;
+  font: 700 10px/1 var(--font-sans);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
 
-  /* ALERT */
-  .alert { padding: 9px 12px; border-radius: 6px; font-size: 11px; line-height: 1.6; }
-  .alert-info { background: var(--blue-glow); border: 1px solid var(--border-blue); color: var(--blue-light); }
+/* ── Template Buttons ───────────────────────────────────────────────────── */
+.tmpl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tmpl-btn {
+  position: relative;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-md);
+  padding: 14px 10px 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--dur-fast) var(--ease-out);
+  color: rgba(255,255,255,0.85);
+}
+.tmpl-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.18); }
+.tmpl-btn.active {
+  background: rgba(17,106,204,0.18);
+  border-color: rgba(17,106,204,0.5);
+  box-shadow: 0 0 0 1px rgba(17,106,204,0.25) inset;
+}
+.tmpl-btn.loading { opacity: 0.5; cursor: wait; }
+.tmpl-status {
+  position: absolute; top: 8px; right: 8px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+}
+.tmpl-btn.ready .tmpl-status { background: var(--er-success); }
+.tmpl-btn.active .tmpl-status { background: #6eaaff; }
+.tmpl-icon-wrap {
+  width: 40px; height: 40px; border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.07);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 8px;
+  font-size: 20px;
+}
+.tmpl-btn.active .tmpl-icon-wrap { background: rgba(17,106,204,0.25); }
+.tmpl-name { display: block; font: 600 11px/1.3 var(--font-sans); color: rgba(255,255,255,0.9); }
+.tmpl-pages { display: block; margin-top: 3px; font: 400 10px/1 var(--font-sans); color: rgba(255,255,255,0.35); }
+.tmpl-btn.active .tmpl-pages { color: #6eaaff; }
 
-  /* BUTTONS */
-  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; white-space: nowrap; }
-  .btn-primary { background: var(--blue); color: white; width: 100%; justify-content: center; font-size: 13px; padding: 11px; }
-  .btn-primary:hover:not(:disabled) { background: var(--blue-light); }
-  .btn-outline { background: transparent; border: 1px solid var(--border-blue); color: var(--blue-light); width: 100%; justify-content: center; margin-top: 6px; }
-  .btn-outline:hover:not(:disabled) { background: var(--blue-glow); }
-  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+/* ── Logo Drop ──────────────────────────────────────────────────────────── */
+.logo-drop {
+  border: 1.5px dashed rgba(255,255,255,0.15);
+  border-radius: var(--radius-md);
+  padding: 18px 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--dur-fast);
+  position: relative;
+  background: rgba(255,255,255,0.02);
+}
+.logo-drop:hover { border-color: rgba(17,106,204,0.6); background: rgba(17,106,204,0.07); }
+.logo-drop.loaded { border-color: rgba(22,166,106,0.5); border-style: solid; background: rgba(22,166,106,0.05); }
+.logo-drop input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.logo-preview { max-height: 50px; max-width: 200px; object-fit: contain; display: none; margin: 0 auto 8px; }
+.logo-drop-icon { font-size: 24px; color: rgba(255,255,255,0.2); margin-bottom: 6px; display: block; }
+.logo-drop.loaded .logo-drop-icon { display: none; }
+.logo-drop-label { font: 600 12px/1.4 var(--font-sans); color: rgba(255,255,255,0.7); }
+.logo-drop-hint  { margin-top: 4px; font: 400 10px/1.4 var(--font-sans); color: rgba(255,255,255,0.3); }
+.logo-drop.loaded .logo-drop-hint { color: var(--er-success); }
 
-  /* MAIN / PREVIEW */
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #1a1f2e; }
-  .preview-header { background: var(--navy2); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-  .preview-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray); flex: 1; }
-  .page-nav { display: flex; align-items: center; gap: 8px; }
-  .page-nav button { width: 26px; height: 26px; border-radius: 5px; border: 1px solid var(--border); background: transparent; color: var(--gray-light); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-  .page-nav button:hover:not(:disabled) { border-color: var(--blue-light); color: var(--blue-light); }
-  .page-nav button:disabled { opacity: 0.3; cursor: not-allowed; }
-  .page-info { font-size: 12px; color: var(--gray-light); min-width: 60px; text-align: center; }
-  .canvas-area { flex: 1; overflow-y: auto; display: flex; align-items: flex-start; justify-content: center; padding: 20px; }
-  #previewCanvas { background: white; box-shadow: 0 4px 32px rgba(0,0,0,0.4); display: none; max-width: 100%; }
-  .empty-state { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--gray); padding: 60px 40px; text-align: center; }
-  .empty-icon { font-size: 52px; opacity: 0.2; }
-  .empty-title { font-size: 16px; font-weight: 600; color: var(--gray-light); }
-  .empty-sub { font-size: 12px; line-height: 1.6; max-width: 340px; }
+/* ── Controls ───────────────────────────────────────────────────────────── */
+.ctrl-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.ctrl-row:last-child { margin-bottom: 0; }
+.ctrl-lbl { font: 500 10px/1 var(--font-sans); color: rgba(255,255,255,0.35); letter-spacing: 0.08em; text-transform: uppercase; width: 68px; flex-shrink: 0; }
+.seg-btns { display: flex; gap: 3px; }
+.seg-btn {
+  padding: 5px 10px; border-radius: var(--radius-sm);
+  font: 600 11px/1 var(--font-sans);
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: transparent;
+  color: rgba(255,255,255,0.4);
+  transition: all var(--dur-fast);
+}
+.seg-btn:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.7); }
+.seg-btn.on { border-color: rgba(17,106,204,0.6); background: rgba(17,106,204,0.2); color: #6eaaff; }
+input[type=range] { flex: 1; accent-color: var(--er-primary); }
+.range-val { font: 600 11px/1 var(--font-sans); color: rgba(255,255,255,0.6); min-width: 36px; text-align: right; }
 
-  /* PROGRESS */
-  .progress-bar-wrap { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 8px; display: none; }
-  .progress-bar-fill { height: 100%; background: var(--blue); width: 0%; transition: width 0.2s; border-radius: 2px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ── Action Buttons ─────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  border-radius: var(--radius-md);
+  font: 600 13px/1 var(--font-sans);
+  cursor: pointer; border: none;
+  transition: all var(--dur-fast) var(--ease-out);
+  white-space: nowrap; width: 100%;
+}
+.btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn i { font-size: 16px; }
 
-  /* LOADING OVERLAY */
-  .init-overlay { position: fixed; inset: 0; background: var(--navy); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 100; transition: opacity 0.4s; }
-  .init-overlay.hidden { opacity: 0; pointer-events: none; }
-  .init-spinner { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  .init-text { font-size: 13px; color: var(--gray-light); font-weight: 600; }
-  .init-sub { font-size: 11px; color: var(--gray); }
+.btn-primary {
+  height: 44px;
+  background: var(--er-primary); color: #fff;
+  box-shadow: 0 1px 3px rgba(17,106,204,0.3);
+}
+.btn-primary:hover:not(:disabled) { background: var(--er-primary-hover); }
+.btn-primary:active:not(:disabled) { background: var(--er-primary-pressed); }
 
-  /* PASSWORD GATE */
-  .pw-gate { position: fixed; inset: 0; background: var(--navy); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; z-index: 200; }
-  .pw-gate.hidden { display: none; }
-  .pw-card { background: var(--navy2); border: 1px solid var(--border-blue); border-radius: 14px; padding: 40px 36px 36px; width: 340px; display: flex; flex-direction: column; align-items: center; gap: 20px; box-shadow: 0 8px 48px rgba(0,0,0,0.5); }
-  .pw-logo { height: 52px; object-fit: contain; margin-bottom: 4px; }
-  .pw-title { font-size: 15px; font-weight: 700; color: var(--off-white); letter-spacing: 0.3px; }
-  .pw-sub { font-size: 12px; color: var(--gray); margin-top: -12px; }
-  .pw-field { width: 100%; position: relative; }
-  .pw-input { width: 100%; background: var(--navy3); border: 1px solid var(--border-blue); border-radius: 7px; padding: 11px 42px 11px 14px; font-size: 14px; color: var(--off-white); outline: none; transition: border-color 0.15s; letter-spacing: 2px; }
-  .pw-input:focus { border-color: var(--blue-light); }
-  .pw-input.shake { animation: shake 0.35s ease; border-color: #ef4444; }
-  .pw-eye { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--gray); font-size: 16px; line-height: 1; padding: 2px; }
-  .pw-eye:hover { color: var(--gray-light); }
-  .pw-btn { width: 100%; padding: 11px; background: var(--blue); color: white; border: none; border-radius: 7px; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.15s; letter-spacing: 0.3px; }
-  .pw-btn:hover { background: var(--blue-light); }
-  .pw-err { font-size: 11px; color: #ef4444; min-height: 16px; text-align: center; margin-top: -10px; }
-  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+.btn-secondary {
+  height: 40px; margin-top: 8px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.7);
+}
+.btn-secondary:hover:not(:disabled) { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.2); color: #fff; }
+
+/* ── Progress ───────────────────────────────────────────────────────────── */
+.progress-wrap { height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; margin-top: 10px; display: none; }
+.progress-fill { height: 100%; background: var(--er-primary); width: 0%; transition: width 0.2s; border-radius: 2px; }
+.status-msg { margin-top: 8px; font: 400 11px/1.4 var(--font-sans); color: rgba(255,255,255,0.35); text-align: center; min-height: 15px; }
+
+/* ── Info box ───────────────────────────────────────────────────────────── */
+.info-box {
+  background: rgba(17,106,204,0.1);
+  border: 1px solid rgba(17,106,204,0.25);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  font: 400 11px/1.7 var(--font-sans);
+  color: rgba(255,255,255,0.5);
+}
+.info-box strong { color: rgba(255,255,255,0.75); font-weight: 600; }
+.info-box .step { display: flex; align-items: flex-start; gap: 8px; }
+.info-box .step + .step { margin-top: 6px; }
+.step-num {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+  background: rgba(17,106,204,0.35);
+  color: #6eaaff;
+  font: 700 10px/18px var(--font-sans);
+  text-align: center;
+}
+
+/* ── Main / Preview ─────────────────────────────────────────────────────── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--er-mist); }
+
+.preview-bar {
+  background: var(--er-white);
+  border-bottom: 1px solid var(--border-1);
+  padding: 0 24px;
+  height: 52px;
+  display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-xs);
+}
+.preview-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--er-primary-soft);
+  border: 1px solid rgba(17,106,204,0.2);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px 4px 8px;
+  font: 600 12px/1 var(--font-sans);
+  color: var(--er-primary);
+}
+.preview-chip i { font-size: 14px; }
+.preview-title {
+  font: 600 13px/1 var(--font-sans);
+  color: var(--fg-1);
+  flex: 1;
+}
+.preview-title-empty { color: var(--fg-3); font-weight: 400; }
+
+.page-nav { display: flex; align-items: center; gap: 6px; }
+.page-nav-btn {
+  width: 30px; height: 30px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-1);
+  background: var(--er-white);
+  color: var(--fg-2);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--dur-fast);
+}
+.page-nav-btn:hover:not(:disabled) { border-color: var(--er-primary); color: var(--er-primary); background: var(--er-primary-soft); }
+.page-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.page-info { font: 500 12px/1 var(--font-sans); color: var(--fg-3); min-width: 54px; text-align: center; }
+
+/* ── Canvas Area ────────────────────────────────────────────────────────── */
+.canvas-area {
+  flex: 1; overflow-y: auto;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 28px 24px;
+}
+#previewCanvas {
+  background: white;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  max-width: 100%;
+}
+
+.empty-state {
+  flex: 1; width: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px; padding: 60px 40px; text-align: center;
+}
+.empty-icon-wrap {
+  width: 72px; height: 72px; border-radius: var(--radius-xl);
+  background: var(--er-haze);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; color: var(--er-primary);
+}
+.empty-title { font: 600 16px/1.3 var(--font-sans); color: var(--fg-1); }
+.empty-sub   { font: 400 13px/1.6 var(--font-sans); color: var(--fg-3); max-width: 320px; }
+.empty-steps {
+  display: flex; gap: 8px; margin-top: 4px;
+}
+.empty-step {
+  background: var(--er-white);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  font: 500 11px/1.5 var(--font-sans);
+  color: var(--fg-2);
+  text-align: center;
+  box-shadow: var(--shadow-xs);
+}
+.empty-step i { display: block; font-size: 20px; color: var(--er-primary); margin-bottom: 4px; }
 </style>
 </head>
 <body>
 
-<!-- PASSWORD GATE -->
+<!-- ── PASSWORD GATE ──────────────────────────────────────────────────── -->
 <div class="pw-gate" id="pwGate">
   <div class="pw-card">
     <img class="pw-logo" src="er-logo.png" alt="Expert Radiology">
-    <div class="pw-title">Report Brander</div>
+    <div class="pw-divider"></div>
+    <div class="pw-heading">Report Brander</div>
     <div class="pw-sub">Enter your access password to continue</div>
     <div class="pw-field">
-      <input class="pw-input" id="pwInput" type="password" placeholder="Password" autocomplete="current-password"
-        onkeydown="if(event.key==='Enter')checkPW()">
-      <button class="pw-eye" id="pwEye" onclick="togglePWVis()" title="Show/hide">&#128065;</button>
+      <i class="ph ph-lock-simple"></i>
+      <input class="pw-input" id="pwInput" type="password" placeholder="Password"
+        autocomplete="current-password" onkeydown="if(event.key==='Enter')checkPW()">
+      <button class="pw-eye" id="pwEye" onclick="togglePWVis()">
+        <i class="ph ph-eye" id="pwEyeIcon"></i>
+      </button>
     </div>
     <div class="pw-err" id="pwErr"></div>
-    <button class="pw-btn" onclick="checkPW()">Access Brander</button>
+    <button class="pw-submit" onclick="checkPW()">Access Brander</button>
   </div>
 </div>
 
-<!-- LOADING OVERLAY -->
+<!-- ── LOADING OVERLAY ────────────────────────────────────────────────── -->
 <div class="init-overlay" id="initOverlay" style="display:none;">
   <div class="init-spinner"></div>
-  <div class="init-text">Loading Report Templates&hellip;</div>
+  <div class="init-label">Loading Report Templates&hellip;</div>
   <div class="init-sub" id="initSub">Please wait</div>
 </div>
 
+<!-- ── TOP NAV ───────────────────────────────────────────────────────── -->
 <nav class="topnav">
-  <img id="navLogoImg" src="er-logo.png" alt="Expert Radiology">
-  <div class="nav-div"></div>
-  <span class="nav-label">Report Brander</span>
-  <span class="nav-badge">Logo Injector</span>
+  <img class="topnav-logo" src="er-logo.png" alt="Expert Radiology">
+  <div class="topnav-divider"></div>
+  <span class="topnav-label">Report Brander</span>
+  <span class="topnav-badge">Logo Injector</span>
 </nav>
 
 <div class="layout">
-  <!-- SIDEBAR -->
+
+  <!-- ── SIDEBAR ────────────────────────────────────────────────────── -->
   <aside class="sidebar">
 
-    <!-- TEMPLATE SELECTOR -->
+    <!-- Templates -->
     <div class="sb-sec">
-      <span class="sb-lbl">Select Report Template</span>
+      <span class="sb-lbl">Report Template</span>
       <div class="tmpl-grid">
         <button class="tmpl-btn loading" id="tmpl-brain" onclick="selectTemplate('brain')">
           <div class="tmpl-status"></div>
-          <span class="tmpl-icon">🧠</span>
+          <div class="tmpl-icon-wrap"><i class="ph ph-brain"></i></div>
           <span class="tmpl-name">Brain MRI</span>
           <span class="tmpl-pages" id="pages-brain">Loading&hellip;</span>
         </button>
         <button class="tmpl-btn loading" id="tmpl-cspine" onclick="selectTemplate('cspine')">
           <div class="tmpl-status"></div>
-          <span class="tmpl-icon">🦴</span>
+          <div class="tmpl-icon-wrap"><i class="ph ph-scan"></i></div>
           <span class="tmpl-name">C-Spine MRI</span>
           <span class="tmpl-pages" id="pages-cspine">Loading&hellip;</span>
         </button>
         <button class="tmpl-btn loading" id="tmpl-lspine" onclick="selectTemplate('lspine')">
           <div class="tmpl-status"></div>
-          <span class="tmpl-icon">🦴</span>
+          <div class="tmpl-icon-wrap"><i class="ph ph-scan"></i></div>
           <span class="tmpl-name">L-Spine MRI</span>
           <span class="tmpl-pages" id="pages-lspine">Loading&hellip;</span>
         </button>
         <button class="tmpl-btn loading" id="tmpl-knee" onclick="selectTemplate('knee')">
           <div class="tmpl-status"></div>
-          <span class="tmpl-icon">🦵</span>
+          <div class="tmpl-icon-wrap"><i class="ph ph-person-simple-walk"></i></div>
           <span class="tmpl-name">Knee MRI</span>
           <span class="tmpl-pages" id="pages-knee">Loading&hellip;</span>
         </button>
       </div>
     </div>
 
-    <!-- LOGO UPLOAD -->
+    <!-- Logo Upload -->
     <div class="sb-sec">
-      <span class="sb-lbl">Upload Your Logo</span>
+      <span class="sb-lbl">Client Logo</span>
       <div class="logo-drop" id="logoDrop">
         <input type="file" accept="image/*" onchange="loadLogo(this)">
+        <i class="ph ph-upload-simple logo-drop-icon"></i>
         <img id="logoPreview" class="logo-preview" alt="">
-        <div class="logo-drop-label" id="logoLabel">&#8679; Click to Upload Logo</div>
-        <div class="logo-drop-hint" id="logoHint">PNG with transparent background recommended</div>
+        <div class="logo-drop-label" id="logoLabel">Upload Your Logo</div>
+        <div class="logo-drop-hint" id="logoHint">PNG with transparent background</div>
       </div>
     </div>
 
-    <!-- PLACEMENT CONTROLS -->
+    <!-- Placement -->
     <div class="sb-sec">
       <span class="sb-lbl">Logo Placement</span>
       <div class="ctrl-row">
         <span class="ctrl-lbl">Position</span>
         <div class="seg-btns">
           <button class="seg-btn on" id="posL" onclick="setPos('left')">Left</button>
-          <button class="seg-btn" id="posC" onclick="setPos('center')">Center</button>
-          <button class="seg-btn" id="posR" onclick="setPos('right')">Right</button>
+          <button class="seg-btn"    id="posC" onclick="setPos('center')">Center</button>
+          <button class="seg-btn"    id="posR" onclick="setPos('right')">Right</button>
         </div>
       </div>
       <div class="ctrl-row">
-        <span class="ctrl-lbl">Logo Size</span>
+        <span class="ctrl-lbl">Size</span>
         <input type="range" min="40" max="160" value="80" id="logoSize" oninput="onSizeChange(this.value)">
         <span class="range-val" id="sizeVal">80px</span>
       </div>
       <div class="ctrl-row">
-        <span class="ctrl-lbl">Top Offset</span>
+        <span class="ctrl-lbl">Top offset</span>
         <input type="range" min="0" max="100" value="12" id="logoTop" oninput="onTopChange(this.value)">
         <span class="range-val" id="topVal">12px</span>
       </div>
     </div>
 
-    <!-- ACTIONS -->
+    <!-- Actions -->
     <div class="sb-sec" style="flex:1;">
       <button class="btn btn-primary" id="generateBtn" onclick="generatePreview()" disabled>
-        &#9889; Generate Preview
+        <i class="ph-bold ph-lightning"></i> Generate Preview
       </button>
-      <button class="btn btn-outline" id="exportBtn" onclick="exportPDF()" disabled>
-        &#8595; Export Branded PDF
+      <button class="btn btn-secondary" id="exportBtn" onclick="exportPDF()" disabled>
+        <i class="ph ph-download-simple"></i> Export Branded PDF
       </button>
-      <div class="progress-bar-wrap" id="progressWrap">
-        <div class="progress-bar-fill" id="progressFill"></div>
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-fill" id="progressFill"></div>
       </div>
-      <div id="statusMsg" style="font-size:11px;color:var(--gray);margin-top:8px;text-align:center;min-height:16px;"></div>
+      <div class="status-msg" id="statusMsg"></div>
     </div>
 
-    <!-- HOW IT WORKS -->
+    <!-- How it works -->
     <div class="sb-sec">
-      <div class="alert alert-info">
-        <strong>How it works:</strong><br>
-        1. Select a report type above<br>
-        2. Upload your logo (PNG recommended)<br>
-        3. Adjust size &amp; position<br>
-        4. Generate Preview &rarr; Export PDF
+      <div class="info-box">
+        <div class="step"><div class="step-num">1</div><span>Select a <strong>report type</strong> above</span></div>
+        <div class="step"><div class="step-num">2</div><span><strong>Upload</strong> the client logo (PNG)</span></div>
+        <div class="step"><div class="step-num">3</div><span>Adjust <strong>size &amp; position</strong></span></div>
+        <div class="step"><div class="step-num">4</div><span><strong>Generate</strong> preview &rarr; <strong>Export</strong> PDF</span></div>
       </div>
     </div>
 
   </aside>
 
-  <!-- MAIN PREVIEW -->
+  <!-- ── MAIN PREVIEW ──────────────────────────────────────────────── -->
   <main class="main">
-    <div class="preview-header">
-      <span class="preview-title" id="previewTitle">No template selected</span>
+    <div class="preview-bar">
+      <div class="preview-chip" id="previewChip" style="display:none;">
+        <i class="ph-fill ph-file-text"></i>
+        <span id="previewChipLabel"></span>
+      </div>
+      <span class="preview-title preview-title-empty" id="previewTitle">No template selected</span>
       <div class="page-nav">
-        <button id="prevPage" onclick="changePage(-1)" disabled>&#8249;</button>
-        <span class="page-info" id="pageInfo">&#8212; / &#8212;</span>
-        <button id="nextPage" onclick="changePage(1)" disabled>&#8250;</button>
+        <button class="page-nav-btn" id="prevPage" onclick="changePage(-1)" disabled>
+          <i class="ph ph-caret-left"></i>
+        </button>
+        <span class="page-info" id="pageInfo">&mdash; / &mdash;</span>
+        <button class="page-nav-btn" id="nextPage" onclick="changePage(1)" disabled>
+          <i class="ph ph-caret-right"></i>
+        </button>
       </div>
     </div>
+
     <div class="canvas-area" id="canvasArea">
       <div class="empty-state" id="emptyState">
-        <div class="empty-icon">&#128196;</div>
+        <div class="empty-icon-wrap"><i class="ph ph-file-text"></i></div>
         <div class="empty-title">Select a report template to get started</div>
-        <div class="empty-sub">Choose Brain, C-Spine, L-Spine, or Knee MRI from the left panel, then upload your logo and click <strong>Generate Preview</strong>.</div>
+        <div class="empty-sub">Choose a scan type from the sidebar, upload your logo, then generate a branded preview.</div>
+        <div class="empty-steps">
+          <div class="empty-step"><i class="ph ph-squares-four"></i>Select template</div>
+          <div class="empty-step"><i class="ph ph-image-square"></i>Upload logo</div>
+          <div class="empty-step"><i class="ph ph-lightning"></i>Generate &amp; export</div>
+        </div>
       </div>
       <canvas id="previewCanvas"></canvas>
     </div>
   </main>
+
 </div>
 
 <script>
-// ---- PASSWORD GATE ----
+// ── Password Gate ───────────────────────────────────────────────────────
 function unlockApp() {
   document.getElementById('pwGate').classList.add('hidden');
   document.getElementById('initOverlay').style.display = 'flex';
@@ -296,9 +615,17 @@ window.checkPW = function() {
 };
 window.togglePWVis = function() {
   const inp = document.getElementById('pwInput');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
+  const icon = document.getElementById('pwEyeIcon');
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    icon.className = 'ph ph-eye-slash';
+  } else {
+    inp.type = 'password';
+    icon.className = 'ph ph-eye';
+  }
 };
 
+// ── PDF Engine ──────────────────────────────────────────────────────────
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const { jsPDF } = window.jspdf;
 
@@ -335,12 +662,13 @@ async function init() {
       btn.classList.add('ready');
       document.getElementById('pages-' + key).textContent = doc.numPages + ' page' + (doc.numPages > 1 ? 's' : '');
     } catch(e) {
-      document.getElementById('pages-' + key).textContent = 'Error loading';
+      document.getElementById('pages-' + key).textContent = 'Load error';
       console.error('Failed to load', key, e);
     }
   }
-  document.getElementById('initOverlay').classList.add('hidden');
-  setTimeout(() => document.getElementById('initOverlay').style.display = 'none', 500);
+  const overlay = document.getElementById('initOverlay');
+  overlay.classList.add('hidden');
+  setTimeout(() => overlay.style.display = 'none', 450);
 }
 
 function selectTemplate(key) {
@@ -350,7 +678,13 @@ function selectTemplate(key) {
   S.activeKey = key;
   S.currentPage = 1;
   S.renderedPages = [];
-  document.getElementById('previewTitle').textContent = TEMPLATES[key].name;
+  // Update bar
+  const chip = document.getElementById('previewChip');
+  chip.style.display = 'inline-flex';
+  document.getElementById('previewChipLabel').textContent = TEMPLATES[key].name;
+  const titleEl = document.getElementById('previewTitle');
+  titleEl.textContent = '';
+  titleEl.classList.remove('preview-title-empty');
   document.getElementById('exportBtn').disabled = true;
   document.getElementById('emptyState').style.display = 'none';
   document.getElementById('previewCanvas').style.display = 'block';
@@ -371,7 +705,7 @@ async function renderRawPage(key, pageNum) {
 
 function getScale(page) {
   const vp = page.getViewport({ scale: 1 });
-  const maxW = Math.min(document.getElementById('canvasArea').clientWidth - 40, 820);
+  const maxW = Math.min(document.getElementById('canvasArea').clientWidth - 56, 820);
   return maxW / vp.width;
 }
 
@@ -384,7 +718,8 @@ function loadLogo(inp) {
     img.onload = () => {
       S.logoImg = img;
       const prev = document.getElementById('logoPreview');
-      prev.src = e.target.result; prev.style.display = 'block';
+      prev.src = e.target.result;
+      prev.style.display = 'block';
       document.getElementById('logoLabel').textContent = '\u2713 ' + f.name;
       document.getElementById('logoDrop').classList.add('loaded');
       checkReady();
@@ -433,11 +768,11 @@ async function renderBrandedPage(key, pageNum) {
   canvas.width = vp.width; canvas.height = vp.height;
   const ctx = canvas.getContext('2d');
   await page.render({ canvasContext: ctx, viewport: vp }).promise;
-  const logo = S.logoImg;
-  const logoH = S.logoH * scale;
-  const logoW = (logo.width / logo.height) * logoH;
-  const topOff = S.logoTop * scale;
   if (pageNum === 1) {
+    const logo = S.logoImg;
+    const logoH = S.logoH * scale;
+    const logoW = (logo.width / logo.height) * logoH;
+    const topOff = S.logoTop * scale;
     let x;
     if (S.pos === 'left')       x = 24 * scale;
     else if (S.pos === 'right') x = vp.width - logoW - 24 * scale;
@@ -453,7 +788,7 @@ function showPage(n) {
   const canvas = document.getElementById('previewCanvas');
   const img = new Image();
   img.onload = () => {
-    const maxW = Math.min(document.getElementById('canvasArea').clientWidth - 40, 820);
+    const maxW = Math.min(document.getElementById('canvasArea').clientWidth - 56, 820);
     const ratio = maxW / img.width;
     canvas.width = img.width * ratio; canvas.height = img.height * ratio;
     canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -509,7 +844,6 @@ function setStatus(msg) { document.getElementById('statusMsg').textContent = msg
 function showProgress(pct) { document.getElementById('progressWrap').style.display = 'block'; document.getElementById('progressFill').style.width = (pct * 100) + '%'; }
 function hideProgress() { setTimeout(() => document.getElementById('progressWrap').style.display = 'none', 800); }
 
-// init() is called by the password gate on success, or immediately if session is already authenticated
 if (sessionStorage.getItem('er_auth') === '1') init();
 </script>
 </body>
